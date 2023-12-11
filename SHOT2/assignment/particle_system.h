@@ -31,25 +31,25 @@
 #include <bitset>   // for
 #include <list>     // for std::list
 #include <random>   // for std::random_device, std::uniform_real_distribution, std::uniform_int_distribution
-
-int const threads = 4;
+#include <thread>
+int const numThreads = 4;
 
 // UTILITY
 
 struct vector4
 {
-  double x;
-  double y;
-  double z;
-  double w;
+    float x;
+    float y;
+    float z;
+    float w;
 };
 
 struct colourf
 {
-  double r;
-  double g;
-  double b;
-  double a;
+  float r;
+  float g;
+  float b;
+  float a;
 };
 
 
@@ -59,12 +59,12 @@ struct colourf
 /// <param name="min">minimum random number (inclusive)</param>
 /// <param name="max">maximum random number (inclusive)</param>
 /// <returns>random number between min & max (inclusive)</returns>
-static double random_getd (double min, double max)
+static float random_getd (float min, float max)
 {
   MAGPIE_DASSERT (max >= min);
 
   static std::random_device rd;
-  std::uniform_real_distribution <double> distribution (min, max);
+  std::uniform_real_distribution <float> distribution (min, max);
 
   return distribution (rd);
 }
@@ -92,9 +92,9 @@ static long long random_geti (long long min, long long max)
 /// <param name="v1">end value</param>
 /// <param name="t">lerp proportion</param>
 /// <returns>interpolated value</returns>
-static double lerp (double v0, double v1, double t)
+static float lerp (float v0, float v1, float t)
 {
-  return ((1.0 - t) * v0) + (t * v1);
+  return ((1.0f - t) * v0) + (t * v1);
 }
 
 
@@ -108,11 +108,11 @@ public:
   /// </summary>
   /// <param name="elapsed_seconds">elapsed time since last frame</param>
   /// <returns>true, if particle has expired and needs deleting</returns>
-  virtual bool process (double elapsed_seconds) = 0;
+  virtual bool process (float elapsed_seconds) = 0;
 
-  double  life_time = {};
-  double  life_remaining = {};
-  double  kill_y = {};
+  float  life_time = {};
+  float  life_remaining = {};
+  float  kill_y = {};
 
   vector4 position = {};
   vector4 velocity = {};
@@ -130,22 +130,22 @@ public:
   {
     // left hand side of screen
 
-    life_time = life_remaining = random_getd (7.5, 13.0);
-    kill_y = -(double)SCREEN_HEIGHT / 2.0;
+    life_time = life_remaining = random_getd (7.5f, 13.0f);
+    kill_y = -(float)SCREEN_HEIGHT / 2.0f;
 
-    position = { -(double)SCREEN_WIDTH / 2.0 + random_getd (0.0, 200.0),
-      -(double)SCREEN_HEIGHT / 2.0 + random_getd (0.0, 100.0),
-      0.0, 0.0 };
-    velocity = { random_getd (magpie::maths::cos (magpie::maths::radians (89.0)), magpie::maths::cos (magpie::maths::radians (75.0))) * 200.f,
-      random_getd (magpie::maths::sin (magpie::maths::radians (75.0)), magpie::maths::sin (magpie::maths::radians (89.0))) * 200.f,
-      0.0, 0.0 };
-    acceleration = { 2.0, -26.5, 0.0, 0.0 };
+    position = { -(float)SCREEN_WIDTH / 2.0f + random_getd (0.0f, 200.0f),
+      -(float)SCREEN_HEIGHT / 2.0f + random_getd (0.0f, 100.0f),
+      0.0f, 0.0f };
+    velocity = { random_getd (magpie::maths::cos (magpie::maths::radians (89.0f)), magpie::maths::cos (magpie::maths::radians (75.0f))) * 200.f,
+      random_getd (magpie::maths::sin (magpie::maths::radians (75.0f)), magpie::maths::sin (magpie::maths::radians (89.0f))) * 200.f,
+      0.0f, 0.0f };
+    acceleration = { 2.0f, -26.5f, 0.0f, 0.0f };
 
-    start_colour = { 1.0, 0.2, 0.2, 1.0 }; // red
-    end_colour = { 0.2, 1.0, 1.0, 1.0 }; // inverse red
+    start_colour = { 1.0f, 0.2f, 0.2f, 1.0f }; // red
+    end_colour = { 0.2f, 1.0f, 1.0f, 1.0f }; // inverse red
   }
 
-  bool process (double elapsed_seconds) override
+  bool process (float elapsed_seconds) override
   {
     // update linear motion
     position.x += velocity.x * elapsed_seconds;
@@ -168,7 +168,7 @@ public:
     life_remaining -= elapsed_seconds;
 
     // is particle still alive?
-    if (life_remaining <= 0.0)
+    if (life_remaining <= 0.0f)
       return true;
     else if (position.y < kill_y)
       return true;
@@ -184,22 +184,22 @@ public:
   {
     // middle of screen
 
-    life_time = life_remaining = random_getd (9.0, 10.0);
-    kill_y = -(double)SCREEN_HEIGHT / 2.0 + 50.0;
+    life_time = life_remaining = random_getd (9.0f, 10.0f);
+    kill_y = -(float)SCREEN_HEIGHT / 2.0f + 50.0f;
 
-    position = { random_getd (0.0, (double)SCREEN_WIDTH / 3.0),
-      (double)SCREEN_HEIGHT / 2.0,
-      0.0, 0.0 };
-    velocity = { -50.0,
-      random_getd (-100.0, -60.0),
-      0.0, 0.0 };
-    acceleration = { 0.0, 0.0, 0.0, 0.0 };
+    position = { random_getd (0.0f, (float)SCREEN_WIDTH / 3.0f),
+      (float)SCREEN_HEIGHT / 2.0f,
+      0.0f, 0.0f };
+    velocity = { -50.0f,
+      random_getd (-100.0f, -60.0f),
+      0.0f, 0.0f };
+    acceleration = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-    start_colour = { 0.2, 1.0, 0.2, 1.0 }; // green
-    end_colour = { 1.0, 0.2, 1.0, 1.0 }; // inverse green
+    start_colour = { 0.2f, 1.0f, 0.2f, 1.0f }; // green
+    end_colour = { 1.0f, 0.2f, 1.0f, 1.0f }; // inverse green
   }
 
-  bool process (double elapsed_seconds) override
+  bool process (float elapsed_seconds) override
   {
     // update linear motion
     position.x += velocity.x * elapsed_seconds;
@@ -224,7 +224,7 @@ public:
     // is particle still alive?
     if (position.y < kill_y)
       return true;
-    else if (life_remaining <= 0.0)
+    else if (life_remaining <= 0.0f)
       return true;
     else
       return false;
@@ -238,22 +238,22 @@ public:
   {
     // right hand side of screen
 
-    life_time = life_remaining = random_getd (3.5, 6.0);
-    kill_y = -(double)SCREEN_HEIGHT / 2.0 + 15.0;
+    life_time = life_remaining = random_getd (3.5f, 6.0f);
+    kill_y = -(float)SCREEN_HEIGHT / 2.0f + 15.0f;
 
-    position = { (double)SCREEN_WIDTH / 2.0 - 300.0,
-      -(double)SCREEN_HEIGHT / 2.0 + 400.0,
-      0.0, 0.0 };
-    velocity = { random_getd (-50.0, 50.0),
-      random_getd (-50.0, 50.0),
-      0.0, 0.0 };
-    acceleration = { 0.0, 0.0, 0.0, 0.0 };
+    position = { (float)SCREEN_WIDTH / 2.0f - 300.0f,
+      -(float)SCREEN_HEIGHT / 2.0f + 400.0f,
+      0.0f, 0.0f };
+    velocity = { random_getd (-50.0f, 50.0f),
+      random_getd (-50.0f, 50.0f),
+      0.0f, 0.0f };
+    acceleration = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-    start_colour = { 0.2, 0.2, 1.0, 1.0 }; // blue
-    end_colour = { 1.0, 1.0, 0.2, 1.0 }; // inverse blue
+    start_colour = { 0.2f, 0.2f, 1.0f, 1.0f }; // blue
+    end_colour = { 1.0f, 1.0f, 0.2f, 1.0f }; // inverse blue
   }
 
-  bool process (double elapsed_seconds) override
+  bool process (float elapsed_seconds) override
   {
     // update linear motion
     position.x += velocity.x * elapsed_seconds;
@@ -276,7 +276,7 @@ public:
     life_remaining -= elapsed_seconds;
 
     // is particle still alive?
-    if (life_remaining <= 0.0)
+    if (life_remaining <= 0.0f)
       return true;
     else if (position.y < kill_y)
       return true;
@@ -295,7 +295,7 @@ public:
 /// <param name="particles">list of particle pointers</param>
 /// <param name="elapsed_seconds">elapsed frame time</param>
 /// <returns>updated list of pointers to particles</returns>
-static std::list <particle*> process (std::list <particle*> particles, double elapsed_seconds)
+static std::list <particle*> process (std::list <particle*> particles, float elapsed_seconds)
 {
   // iterators provide a generic way to access the data at a particular element of a container
   // e.g. vectors, lists and maps // https://en.cppreference.com/w/cpp/container
@@ -336,20 +336,20 @@ static std::list <particle*> process (std::list <particle*> particles, double el
 /// <param name="particles">list of particle pointers</param>
 /// <param name="elapsed_seconds">elapsed frame time</param>
 /// <returns>updated list of pointers to particles</returns>
-static std::list <particle*> emit (std::list <particle*> particles, double elapsed_seconds)
+static std::list <particle*> emit (std::list <particle*> particles, float elapsed_seconds)
 {
   long long num_particles_spawned = 0u;
   int particle_type = 0;
   for (float i = 0.f; i < (float)PARTICLE_MAX * 2.f; i += 1.f)
   {
     // make sure we never exceed maximum particle budget
-    if (particles.size () == PARTICLE_MAX)
+    if (particles.size () == PARTICLE_MAX/numThreads)
     {
       magpie::printf ("num particles == PARTICLE_MAX\n");
       continue;
     }
     // make sure we never exceed frame's particle budget
-    if (num_particles_spawned == PARTICLE_SPAWN_RATE)
+    if (num_particles_spawned == PARTICLE_SPAWN_RATE/numThreads)
     {
       continue;
     }
@@ -380,7 +380,7 @@ static std::list <particle*> emit (std::list <particle*> particles, double elaps
   return particles;
 }
 
-void worker(std::list <particle*>& particles, double elapsed_seconds)
+void worker(std::list <particle*>& particles, float elapsed_seconds)
 {
 
 
@@ -396,25 +396,31 @@ class particle_system_t
 public:
   bool initialise (magpie::renderer& renderer)
   {
-    // other important stuff...
-
+    //Resizes the variable containing the maximum number of particles (verticies) 
     return particle_renderer.initialise (PARTICLE_MAX);
   }
 
-  void update (double elapsed_seconds, long long& num_active_particles)
+  void update (float elapsed_seconds, long long& num_active_particles)
   {
-      for (int i = 0; i < threads; ++i) {
-          particles[i] = process(particles[i], elapsed_seconds);
-          particles[i] = emit(particles[i], elapsed_seconds);
-          .emplace_back(worker, i);
+      std::vector <std::thread> threads;
+      for (int i = 0; i < numThreads; ++i) {
+          //particles[i] = process(particles[i], elapsed_seconds);
+          //particles[i] = emit(particles[i], elapsed_seconds);
+          threads.emplace_back(worker,std::ref (particles[i]), elapsed_seconds);
           
       }
-      //num_active_particles = particles[i].size();
+      //num_active_particles = threads.size();
+      for (std::thread& t : threads)
+      {
+          // pause this thread until other thread exits
+          t.join();
+      }
+
   }
   void render (magpie::renderer& renderer)
   {
     magpie::printf ("rendering particles\n");
-    for (int i = 0; i < threads; ++i) {
+    for (int i = 0; i < numThreads; ++i) {
         for (particle const* p : particles[i])
         {
             particle_renderer.draw(renderer,
@@ -454,7 +460,8 @@ public:
 
 
       // delete all particles
-      for (int i = 0; i < threads; ++i) {
+      for (int i = 0; i < numThreads; ++i) 
+      {
 
 
           std::list <particle*>::iterator it = particles[i].begin();
@@ -476,6 +483,6 @@ public:
 
 private:
   particle_renderer_2d particle_renderer;
-  std::list <particle*> particles[threads];
+  std::list <particle*> particles[numThreads];
 
 };

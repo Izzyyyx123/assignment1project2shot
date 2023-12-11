@@ -122,7 +122,7 @@ ENTRY_POINT
   // frame timer
   LARGE_INTEGER clock_freq;
   QueryPerformanceFrequency (&clock_freq); // ask Windows for the CPU timer frequency
-  double const timer_multiplier_secs = (double)clock_freq.QuadPart;
+  float const timer_multiplier_secs = (float)clock_freq.QuadPart;
   magpie::printf ("Andy says hello\n");
   LARGE_INTEGER qpc_start, qpc_end;
   QueryPerformanceCounter (&qpc_start); // start frame timer
@@ -134,9 +134,9 @@ ENTRY_POINT
   while (renderer.process_os_messages ())
   {
     QueryPerformanceCounter (&qpc_end); // end frame timer
-    double const elapsed_seconds = (double)(qpc_end.QuadPart - qpc_start.QuadPart) / timer_multiplier_secs;
+    float const elapsed_seconds = (float)(qpc_end.QuadPart - qpc_start.QuadPart) / timer_multiplier_secs;
     magpie::printf ("FPS = %.2f - elapsed = %.5fs",
-      1.0 / elapsed_seconds, // FPS
+      1.0f / elapsed_seconds, // FPS
       elapsed_seconds);      // last frame time
 
     QueryPerformanceCounter (&qpc_start); // start frame timer
