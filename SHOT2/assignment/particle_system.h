@@ -295,7 +295,7 @@ public:
 /// <param name="particles">list of particle pointers</param>
 /// <param name="elapsed_seconds">elapsed frame time</param>
 /// <returns>updated list of pointers to particles</returns>
-static std::list <particle*> process (std::list <particle*> particles, float elapsed_seconds)
+void process(std::list <particle*>& particles, float elapsed_seconds)
 {
   // iterators provide a generic way to access the data at a particular element of a container
   // e.g. vectors, lists and maps // https://en.cppreference.com/w/cpp/container
@@ -327,8 +327,6 @@ static std::list <particle*> process (std::list <particle*> particles, float ela
       it++;
     }
   }
-
-  return particles;
 }
 /// <summary>
 /// create/add new particles to the list
@@ -336,7 +334,7 @@ static std::list <particle*> process (std::list <particle*> particles, float ela
 /// <param name="particles">list of particle pointers</param>
 /// <param name="elapsed_seconds">elapsed frame time</param>
 /// <returns>updated list of pointers to particles</returns>
-static std::list <particle*> emit (std::list <particle*> particles, float elapsed_seconds)
+void emit (std::list <particle*>& particles, float elapsed_seconds)
 {
   long long num_particles_spawned = 0u;
   int particle_type = 0;
@@ -376,16 +374,14 @@ static std::list <particle*> emit (std::list <particle*> particles, float elapse
     // 'wrap' particle type so its always valid, 0 <-> { NUM_PARTICLE_TYPES - 1 }
     particle_type = particle_type % NUM_PARTICLE_TYPES;
   }
-
-  return particles;
 }
 
 void worker(std::list <particle*>& particles, float elapsed_seconds)
 {
 
-
-    particles = process(particles, elapsed_seconds);
-    particles = emit(particles, elapsed_seconds);
+    //pass reference
+    process(particles, elapsed_seconds);
+    emit(particles, elapsed_seconds);
 
 
 
@@ -404,12 +400,9 @@ public:
   {
       std::vector <std::thread> threads;
       for (int i = 0; i < numThreads; ++i) {
-          //particles[i] = process(particles[i], elapsed_seconds);
-          //particles[i] = emit(particles[i], elapsed_seconds);
           threads.emplace_back(worker,std::ref (particles[i]), elapsed_seconds);
           
       }
-      //num_active_particles = threads.size();
       for (std::thread& t : threads)
       {
           // pause this thread until other thread exits

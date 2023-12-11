@@ -78,6 +78,7 @@
 #include "particle_system.h" // for particle_system_t
 
 #include "magpie.h"          // for magpie window/rendering components
+#include "timer.h"
 
 #include <optional>          // for
 #include <string>            // for
@@ -119,27 +120,33 @@ ENTRY_POINT
   long long num_active_particles = 0;
 
 
-  // frame timer
-  LARGE_INTEGER clock_freq;
-  QueryPerformanceFrequency (&clock_freq); // ask Windows for the CPU timer frequency
-  float const timer_multiplier_secs = (float)clock_freq.QuadPart;
-  magpie::printf ("Andy says hello\n");
-  LARGE_INTEGER qpc_start, qpc_end;
-  QueryPerformanceCounter (&qpc_start); // start frame timer
-  // have really small first frame elapsed seconds, rather than an unknown time
+  //// frame timer
+  //LARGE_INTEGER clock_freq;
+  //QueryPerformanceFrequency (&clock_freq); // ask Windows for the CPU timer frequency
+  //float const timer_multiplier_secs = (float)clock_freq.QuadPart;
+  //magpie::printf ("Andy says hello\n");
+  //LARGE_INTEGER qpc_start, qpc_end;
+  //QueryPerformanceCounter (&qpc_start); // start frame timer
+  //// have really small first frame elapsed seconds, rather than an unknown time
 
 
   // GAME LOOP
-
+  Timer frametimer;
+  timer_average avgTime;
+  frametimer.start();
   while (renderer.process_os_messages ())
   {
-    QueryPerformanceCounter (&qpc_end); // end frame timer
-    float const elapsed_seconds = (float)(qpc_end.QuadPart - qpc_start.QuadPart) / timer_multiplier_secs;
-    magpie::printf ("FPS = %.2f - elapsed = %.5fs",
-      1.0f / elapsed_seconds, // FPS
-      elapsed_seconds);      // last frame time
+    //QueryPerformanceCounter (&qpc_end); // end frame timer
+    //float const elapsed_seconds = (float)(qpc_end.QuadPart - qpc_start.QuadPart) / timer_multiplier_secs;
+    //magpie::printf ("FPS = %.2f - elapsed = %.5fs",
+    //  1.0f / elapsed_seconds, // FPS
+    //  elapsed_seconds);      // last frame time
+    //QueryPerformanceCounter (&qpc_start); // start frame timer
+      avgTime.start();
 
-    QueryPerformanceCounter (&qpc_start); // start frame timer
+      frametimer.stop();
+      float elapsed_seconds = frametimer.get_elapsed_s();
+      frametimer.start();
 
 
     // UPDATE
@@ -188,10 +195,12 @@ ENTRY_POINT
     }
 
 
-    magpie::printf ("\nnumber of active particles = %d, All paricles are active: %s, ns/P = %.2f\n",
-      num_active_particles,                                             // number of active particles
-      num_active_particles == PARTICLE_MAX ? "YES" : "NO",              // all particles are active?
-      elapsed_seconds * 1'000'000'000.f / (float)num_active_particles); // time (ns) per particle
+    //magpie::printf ("\nnumber of active particles = %d, All paricles are active: %s, ns/P = %.2f\n",
+    //  num_active_particles,                                             // number of active particles
+    //  num_active_particles == PARTICLE_MAX ? "YES" : "NO",              // all particles are active?
+    //  elapsed_seconds * 1'000'000'000.f / (float)num_active_particles); // time (ns) per particle
+    avgTime.stop();
+    avgTime.print_to_file();
   }
 
 
