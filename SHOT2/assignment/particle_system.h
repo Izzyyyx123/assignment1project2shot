@@ -40,8 +40,6 @@ struct vector4
 {
     float x;
     float y;
-    float z;
-    float w;
 };
 
 struct colourf
@@ -134,12 +132,11 @@ public:
     kill_y = -(float)SCREEN_HEIGHT / 2.0f;
 
     position = { -(float)SCREEN_WIDTH / 2.0f + random_getd (0.0f, 200.0f),
-      -(float)SCREEN_HEIGHT / 2.0f + random_getd (0.0f, 100.0f),
-      0.0f, 0.0f };
+      -(float)SCREEN_HEIGHT / 2.0f + random_getd (0.0f, 100.0f)};
     velocity = { random_getd (magpie::maths::cos (magpie::maths::radians (89.0f)), magpie::maths::cos (magpie::maths::radians (75.0f))) * 200.f,
-      random_getd (magpie::maths::sin (magpie::maths::radians (75.0f)), magpie::maths::sin (magpie::maths::radians (89.0f))) * 200.f,
-      0.0f, 0.0f };
-    acceleration = { 2.0f, -26.5f, 0.0f, 0.0f };
+      random_getd (magpie::maths::sin (magpie::maths::radians (75.0f)), magpie::maths::sin (magpie::maths::radians (89.0f))) * 200.f
+      };
+    acceleration = { 2.0f, -26.5f};
 
     start_colour = { 1.0f, 0.2f, 0.2f, 1.0f }; // red
     end_colour = { 0.2f, 1.0f, 1.0f, 1.0f }; // inverse red
@@ -150,13 +147,9 @@ public:
     // update linear motion
     position.x += velocity.x * elapsed_seconds;
     position.y += velocity.y * elapsed_seconds;
-    position.z += velocity.z * elapsed_seconds;
-    position.w += velocity.w * elapsed_seconds;
 
     velocity.x += acceleration.x * elapsed_seconds;
     velocity.y += acceleration.y * elapsed_seconds;
-    velocity.z += acceleration.z * elapsed_seconds;
-    velocity.w += acceleration.w * elapsed_seconds;
 
     // update colour
     colour.r = lerp (end_colour.r, start_colour.r, life_remaining / life_time);
@@ -188,12 +181,10 @@ public:
     kill_y = -(float)SCREEN_HEIGHT / 2.0f + 50.0f;
 
     position = { random_getd (0.0f, (float)SCREEN_WIDTH / 3.0f),
-      (float)SCREEN_HEIGHT / 2.0f,
-      0.0f, 0.0f };
+      (float)SCREEN_HEIGHT / 2.0f};
     velocity = { -50.0f,
-      random_getd (-100.0f, -60.0f),
-      0.0f, 0.0f };
-    acceleration = { 0.0f, 0.0f, 0.0f, 0.0f };
+      random_getd (-100.0f, -60.0f)};
+    acceleration = { 0.0f, 0.0f};
 
     start_colour = { 0.2f, 1.0f, 0.2f, 1.0f }; // green
     end_colour = { 1.0f, 0.2f, 1.0f, 1.0f }; // inverse green
@@ -204,13 +195,9 @@ public:
     // update linear motion
     position.x += velocity.x * elapsed_seconds;
     position.y += velocity.y * elapsed_seconds;
-    position.z += velocity.z * elapsed_seconds;
-    position.w += velocity.w * elapsed_seconds;
 
     velocity.x += acceleration.x * elapsed_seconds;
     velocity.y += acceleration.y * elapsed_seconds;
-    velocity.z += acceleration.z * elapsed_seconds;
-    velocity.w += acceleration.w * elapsed_seconds;
 
     // update colour
     colour.r = lerp (end_colour.r, start_colour.r, life_remaining / life_time);
@@ -242,12 +229,10 @@ public:
     kill_y = -(float)SCREEN_HEIGHT / 2.0f + 15.0f;
 
     position = { (float)SCREEN_WIDTH / 2.0f - 300.0f,
-      -(float)SCREEN_HEIGHT / 2.0f + 400.0f,
-      0.0f, 0.0f };
+      -(float)SCREEN_HEIGHT / 2.0f + 400.0f};
     velocity = { random_getd (-50.0f, 50.0f),
-      random_getd (-50.0f, 50.0f),
-      0.0f, 0.0f };
-    acceleration = { 0.0f, 0.0f, 0.0f, 0.0f };
+      random_getd (-50.0f, 50.0f)};
+    acceleration = { 0.0f, 0.0f};
 
     start_colour = { 0.2f, 0.2f, 1.0f, 1.0f }; // blue
     end_colour = { 1.0f, 1.0f, 0.2f, 1.0f }; // inverse blue
@@ -258,13 +243,9 @@ public:
     // update linear motion
     position.x += velocity.x * elapsed_seconds;
     position.y += velocity.y * elapsed_seconds;
-    position.z += velocity.z * elapsed_seconds;
-    position.w += velocity.w * elapsed_seconds;
 
     velocity.x += acceleration.x * elapsed_seconds;
     velocity.y += acceleration.y * elapsed_seconds;
-    velocity.z += acceleration.z * elapsed_seconds;
-    velocity.w += acceleration.w * elapsed_seconds;
 
     // update colour
     colour.r = lerp (end_colour.r, start_colour.r, life_remaining / life_time);
@@ -382,9 +363,6 @@ void worker(std::list <particle*>& particles, float elapsed_seconds)
     //pass reference
     process(particles, elapsed_seconds);
     emit(particles, elapsed_seconds);
-
-
-
 }
 
 class particle_system_t
@@ -417,7 +395,7 @@ public:
         for (particle const* p : particles[i])
         {
             particle_renderer.draw(renderer,
-                p->position.x, p->position.y, p->position.z, p->position.w,
+                p->position.x, p->position.y,
                 p->colour.r, p->colour.g, p->colour.b, p->colour.a);
         }
     }

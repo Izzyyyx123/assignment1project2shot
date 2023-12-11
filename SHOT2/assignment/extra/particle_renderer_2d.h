@@ -41,7 +41,7 @@ public:
 
 
   bool draw (magpie::renderer const& renderer,
-    float position_x, float position_y, float position_z, float position_w,
+    float position_x, float position_y,
     float colour_r, float colour_g, float colour_b, float colour_a)
   {
     if (num_particles == max_particles - 1u)
