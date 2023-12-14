@@ -115,6 +115,7 @@ ENTRY_POINT
   if (!particle_system.initialise (renderer))
   {
     MAGPIE_DASSERT (false);
+
   }
 
   long long num_active_particles = 0;

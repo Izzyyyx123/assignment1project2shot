@@ -32,7 +32,9 @@
 #include <list>     // for std::list
 #include <random>   // for std::random_device, std::uniform_real_distribution, std::uniform_int_distribution
 #include <thread>
-int const numThreads = 4;
+#include <algorithm>
+
+int const numThreads = 8;
 
 // UTILITY
 
@@ -276,13 +278,13 @@ public:
 /// <param name="particles">list of particle pointers</param>
 /// <param name="elapsed_seconds">elapsed frame time</param>
 /// <returns>updated list of pointers to particles</returns>
-void process(std::list <particle*>& particles, float elapsed_seconds)
+void process(std::vector <particle*>& particles, float elapsed_seconds)
 {
   // iterators provide a generic way to access the data at a particular element of a container
   // e.g. vectors, lists and maps // https://en.cppreference.com/w/cpp/container
   // iterators are 'special' in that they can be incremented to go to the next element in the collection
   // (even if it is not physically next to it in memory // https://en.cppreference.com/w/cpp/iterator)
-  std::list <particle*>::iterator it = particles.begin ();
+  std::vector <particle*>::iterator it = particles.begin ();
   while (it != particles.end ())
   {
     // get pointer to particle from iterator
@@ -300,7 +302,8 @@ void process(std::list <particle*>& particles, float elapsed_seconds)
 
       // remove pointer to now released particle from list
       // std::list::erase () returns next valid element :)
-      it = particles.erase (it);
+      std::swap(*it, particles.back());
+      particles.pop_back();
     }
     else
     {
@@ -315,7 +318,7 @@ void process(std::list <particle*>& particles, float elapsed_seconds)
 /// <param name="particles">list of particle pointers</param>
 /// <param name="elapsed_seconds">elapsed frame time</param>
 /// <returns>updated list of pointers to particles</returns>
-void emit (std::list <particle*>& particles, float elapsed_seconds)
+void emit (std::vector <particle*>& particles, float elapsed_seconds)
 {
   long long num_particles_spawned = 0u;
   int particle_type = 0;
@@ -357,7 +360,7 @@ void emit (std::list <particle*>& particles, float elapsed_seconds)
   }
 }
 
-void worker(std::list <particle*>& particles, float elapsed_seconds)
+void worker(std::vector <particle*>& particles, float elapsed_seconds)
 {
 
     //pass reference
@@ -372,6 +375,14 @@ public:
   {
     //Resizes the variable containing the maximum number of particles (verticies) 
     return particle_renderer.initialise (PARTICLE_MAX);
+
+
+  }
+  //reserving room for particles
+  particle_system_t() {
+      for (int i = 0; i < numThreads; ++i) {
+          particles->reserve(PARTICLE_MAX/numThreads);
+      }
   }
 
   void update (float elapsed_seconds, long long& num_active_particles)
@@ -435,7 +446,7 @@ public:
       {
 
 
-          std::list <particle*>::iterator it = particles[i].begin();
+          std::vector <particle*>::iterator it = particles[i].begin();
           while (it != particles[i].end())
           {
               // get pointer to particle from iterator
@@ -445,15 +456,13 @@ public:
               // no effect if p == nullptr
               delete p;
 
-              // remove pointer to now released particle from list
-              // std::list::erase () returns next valid element :)
-              it = particles[i].erase(it);
           }
+          //clears the vector when closing program
+          particles[i].clear();
       }
   }
 
 private:
   particle_renderer_2d particle_renderer;
-  std::list <particle*> particles[numThreads];
-
+  std::vector <particle*> particles[numThreads];
 };

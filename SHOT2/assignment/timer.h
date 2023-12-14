@@ -41,8 +41,8 @@ public:
 
 	timer_average() {
 		times.reserve(NUM_LOOPS);
-
 	}
+
 	void start()
 	{
 		Timer::start();
@@ -55,9 +55,6 @@ public:
 	}
 
 	bool get_are_all_times_collected() {
-		//if (times.size() == NUM_LOOPS) {
-		//	return true;
-		//}
 		return(times.size() == NUM_LOOPS);
 	}
 	float  get_average_time_s() {
