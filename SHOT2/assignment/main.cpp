@@ -78,10 +78,10 @@
 #include "particle_system.h" // for particle_system_t
 
 #include "magpie.h"          // for magpie window/rendering components
-#include "timer.h"
 
-#include <optional>          // for
-#include <string>            // for
+
+#include <optional>          // for non membe functions
+#include <string>            // for variables with words
 
 
 ENTRY_POINT
