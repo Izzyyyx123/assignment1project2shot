@@ -80,7 +80,6 @@
 #include "magpie.h"          // for magpie window/rendering components
 #include "timer.h"
 
-#include <optional>          // for non membe functions
 #include <string>            // for variables with words
 
 

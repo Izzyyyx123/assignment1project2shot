@@ -28,7 +28,6 @@
 
 #include "magpie.h"
 
-#include <bitset>   
 #include <random>   // for std::random_device, std::uniform_real_distribution, std::uniform_int_distribution
 #include <thread>
 #include <algorithm>
